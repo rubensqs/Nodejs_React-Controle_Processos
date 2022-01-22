@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const mysql = require("mysql");
 
 const app = express();
@@ -11,8 +12,23 @@ const db = mysql.createPool({
     database: "ControleProcessosDB"
 });
 
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
 app.get("/", (req, res) => {   
-    res.send("Ativo");
+    res.send("conectado")
+    console.log("get para root enviado");
+});
+
+
+app.post("/login", (req, res) => {
+    console.log("Post request recebido");
+    const userEmail = req.body.email;
+    const userPassword = req.body.password;
+
+    console.log(userEmail);
+    console.log(userPassword);
 });
 
 
