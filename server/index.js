@@ -22,13 +22,14 @@ app.get("/", (req, res) => {
 });
 
 
-app.post("/login", (req, res) => {
-    console.log("Post request recebido");
+app.post("/Registrar", (req, res) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
+    const userNome = req.body.nome;
 
     console.log(userEmail);
     console.log(userPassword);
+    console.log(userNome);
 });
 
 
