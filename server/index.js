@@ -5,6 +5,8 @@ const mysql = require("mysql");
 
 const app = express();
 
+process.env.NODE_ENV = 'production';
+
 const db = mysql.createPool({
     host: "localhost",
     user: "root",
@@ -21,6 +23,26 @@ app.get("/", (req, res) => {
     
 });
 
+app.post("/login", (req, res) => {
+    const userLogin = req.body.email;
+    const userPassword = req.body.password;
+    
+    const sqlSelectLogin = "SELECT * FROM login WHERE email = ?";
+
+    db.query(sqlSelectLogin, [userLogin], (err, resul) => {
+        if (err) {
+            res.send("erro");
+        } else if (resul.length === 0) {
+            res.send("null");
+        } else if (resul[0].password !== userPassword){
+            res.send("senha incorreta");
+        } else {
+            res.send(resul[0]);
+        };
+        
+    });
+    
+});
 
 app.post("/Registrar", (req, res) => {
     const userEmail = req.body.email;

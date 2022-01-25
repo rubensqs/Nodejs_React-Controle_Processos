@@ -122,6 +122,6 @@ function Registro(){
                 <Link to='/'><p className="link">Retornar ao Login</p></Link>            
         </div>
     )
-}
+};
 
 export default Registro

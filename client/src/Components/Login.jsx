@@ -4,9 +4,11 @@ import {Link} from "react-router-dom";
 
 function Login(){
     const [user, setUser] = useState({login: "", password: ""});
+    const [alert, setAlert] = useState();
 
     function capturaValor(event){
         const {name, value} = event.target;
+        setAlert();
         setUser((prev) => {
             if (name === "login"){
                 return {
@@ -20,18 +22,30 @@ function Login(){
                 };
             }
         });
-    }
+    };
 
     function sendUser() {
         Axios.post("http://localhost:3001/login", {
             email: user.login,
             password: user.password
+        }).then((response) => {
+            if (response.data === null){
+                setAlert("Usuário não encontrado!")
+            } else if (response.data === "senha incorreta"){
+                setAlert("Senha incorreta!");
+            } else if (response.data === "erro") {
+                setAlert("Erro no servidor. Tente novamente!")
+            } else {
+                console.log(response);
+            };
+            
         });
         setUser({login: "", password: ""});
-    }
+    };
 
     return (
         <div className="login">
+                <p className="alert">{alert}</p>
                 <label>Login: </label>
                 <input type="email" name="login" value={user.login} placeholder="E-mail" onChange={capturaValor} />
                 <label>Senha: </label>
@@ -44,6 +58,6 @@ function Login(){
                 <Link to='/'><p className="link">Esqueci a senha</p></Link>            
         </div>
     )
-}
+};
 
 export default Login
