@@ -17,8 +17,8 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/", (req, res) => {   
-    res.send("conectado")
-    console.log("get para root enviado");
+    res.send("conectado");
+    
 });
 
 
@@ -27,9 +27,11 @@ app.post("/Registrar", (req, res) => {
     const userPassword = req.body.password;
     const userNome = req.body.nome;
 
-    console.log(userEmail);
-    console.log(userPassword);
-    console.log(userNome);
+    const sqlInsertRegistro = "INSERT INTO login (email, password, nome) VALUES (?, ?, ?)";
+
+    db.query(sqlInsertRegistro, [userEmail, userPassword, userNome], (err, result) => {
+        res.send(err);
+    })
 });
 
 
