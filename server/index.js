@@ -1,16 +1,20 @@
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mysql = require("mysql");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const app = express();
 
 process.env.NODE_ENV = 'production';
 
 const db = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "password",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     database: "ControleProcessosDB"
 });
 
@@ -34,26 +38,34 @@ app.post("/login", (req, res) => {
             res.send("erro");
         } else if (resul.length === 0) {
             res.send("null");
-        } else if (resul[0].password !== userPassword){
-            res.send("senha incorreta");
         } else {
-            res.send(resul[0]);
+            bcrypt.compare(userPassword, resul[0].password, function(erro, resCompare){
+                if (resCompare){
+                    res.send(jwt.sign({email: resul[0].email, nome: resul[0].nome}, process.env.JWT_TOKEN));
+                } else {
+                    res.send("senha incorreta");
+                };
+            });
         };
-        
+            
     });
     
 });
 
 app.post("/Registrar", (req, res) => {
-    const userEmail = req.body.email;
-    const userPassword = req.body.password;
-    const userNome = req.body.nome;
+    bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+        const userEmail = req.body.email;
+        const userPassword = hash;
+        const userNome = req.body.nome;
 
-    const sqlInsertRegistro = "INSERT INTO login (email, password, nome) VALUES (?, ?, ?)";
+        const sqlInsertRegistro = "INSERT INTO login (email, password, nome) VALUES (?, ?, ?)";
 
-    db.query(sqlInsertRegistro, [userEmail, userPassword, userNome], (err, result) => {
-        res.send(err);
-    })
+        db.query(sqlInsertRegistro, [userEmail, userPassword, userNome], (err, result) => {
+            res.send(err);
+        });
+
+    });
+    
 });
 
 
