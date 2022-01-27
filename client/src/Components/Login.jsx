@@ -1,10 +1,12 @@
 import React, {useState} from "react";
 import Axios from "axios";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+
 
 function Login(){
     const [user, setUser] = useState({login: "", password: ""});
     const [alert, setAlert] = useState();
+    const navigate = useNavigate();
 
     function capturaValor(event){
         const {name, value} = event.target;
@@ -25,22 +27,30 @@ function Login(){
     };
 
     function sendUser() {
-        Axios.post("http://localhost:3001/login", {
-            email: user.login,
-            password: user.password
-        }).then((response) => {
-            if (response.data === null){
-                setAlert("Usuário não encontrado!")
-            } else if (response.data === "senha incorreta"){
-                setAlert("Senha incorreta!");
-            } else if (response.data === "erro") {
-                setAlert("Erro no servidor. Tente novamente!")
-            } else {
-                console.log(response);
-            };
-            
-        });
-        setUser({login: "", password: ""});
+        if (user.login === "" || user.password === ""){
+            setAlert("Preencha todos os campos.")
+        } else {
+            Axios.post("http://localhost:3001/login", {
+                email: user.login,
+                password: user.password
+            }).then((response) => {
+                if (response.data === null){
+                    setAlert("Usuário não encontrado!");
+                    setUser({login: "", password: ""});
+                } else if (response.data === "senha incorreta"){
+                    setAlert("Senha incorreta!");
+                    setUser((prev) => {return {login: prev.login, password: ""}});
+                } else if (response.data === "erro") {
+                    setAlert("Erro no servidor. Tente novamente!")
+                } else {
+                    localStorage.setItem("AuthToken", response.data);
+                    navigate("/Main");
+                    console.log(response);
+                };
+                
+            });
+        };
+        
     };
 
     return (

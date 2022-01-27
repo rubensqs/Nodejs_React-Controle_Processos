@@ -9,7 +9,6 @@ const saltRounds = 10;
 
 const app = express();
 
-process.env.NODE_ENV = 'production';
 
 const db = mysql.createPool({
     host: process.env.DB_HOST,
