@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import InputMask from "react-input-mask";
+import jwt_decode from "jwt-decode";
+import Axios from "axios";
 
 function BoxCadProc(props) {
   const [proc, setProc] = useState({
     numProc: "",
     dataProc: "",
-    dataEntProc: "",
+    dataEntProc: null,
     sistOrigem: "",
     orgOrigem: "",
     tipo: "",
     obs: ""
   });
+  const [alerta, setAlerta] = useState("");
+  const token = localStorage.getItem("AuthToken"); 
+  const tokenDecoded = jwt_decode(token);
 
   function capChange(event) {
     const { name, value } = event.target;
@@ -80,18 +85,41 @@ function BoxCadProc(props) {
   }
 
   function submitProc(event) {
-    props.onAdd(proc);
-    setProc({
-      numProc: "",
-      dataProc: "",
-      dataEntProc: "",
-      sistOrigem: "",
-      orgOrigem: "",
-      tipo: "",
-      obs: ""
-    });
-    event.preventDefault();
-  }
+    const cont = Object.values(proc);
+    if (cont[0]==="" || cont[1]==="" || cont[3]==="") {
+      setAlerta("É necessário preencher os campos 'Número do Processo', 'Data de Distribuição' e 'Sistema de Origem'.");
+    } else {
+      setAlerta("");
+      Axios.post("http://localhost:3001/cadProc", {
+        numProcesso: proc.numProc,
+        dataEntrada: proc.dataProc,
+        dataSaida: proc.dataEntProc,
+        sistema: proc.sistOrigem,
+        orgao: proc.orgOrigem,
+        tipo: proc.tipo,
+        obs: proc.obs,
+        responsavel: tokenDecoded.id
+        }).then((response) => {
+          if (response.data.length === 0) {
+            setProc({
+              numProc: "",
+              dataProc: "",
+              dataEntProc: "",
+              sistOrigem: "",
+              orgOrigem: "",
+              tipo: "",
+              obs: ""
+            });
+            setAlerta("Processo cadastrado com sucesso!");
+          } else if (response.data.errno === 1062) {
+            setAlerta("Número de processo já cadastrado!");
+          } else {
+            setAlerta("Erro ao acessar o banco de dados. Tente novamente.");
+          };
+        });
+    };
+  };
+
 
   return (
     <div className="left-side">
@@ -174,6 +202,7 @@ function BoxCadProc(props) {
           </div>
           <div className="button">
             <i onClick={submitProc} className="bx bxs-folder-plus icone"></i>
+            <h6 className="">{alerta}</h6>
           </div>
         </form>
       </div>

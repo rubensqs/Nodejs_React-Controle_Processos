@@ -43,9 +43,9 @@ function Login(){
                 } else if (response.data === "erro") {
                     setAlert("Erro no servidor. Tente novamente!")
                 } else {
+                    localStorage.clear();
                     localStorage.setItem("AuthToken", response.data);
                     navigate("/Main");
-                    console.log(response);
                 };
                 
             });

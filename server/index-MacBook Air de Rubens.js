@@ -26,7 +26,6 @@ app.get("/", (req, res) => {
     
 });
 
-/* -- Validação de Usuário -- */
 app.post("/login", (req, res) => {
     const userLogin = req.body.email;
     const userPassword = req.body.password;
@@ -52,7 +51,6 @@ app.post("/login", (req, res) => {
     
 });
 
-/* -- Registro de Novo Usuário -- */
 app.post("/Registrar", (req, res) => {
     bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
         const userEmail = req.body.email;
@@ -69,23 +67,7 @@ app.post("/Registrar", (req, res) => {
     
 });
 
-/* -- Cadastro de Processos -- */
-app.post("/cadProc", (req, res) => {
-    const numProcesso = req.body.numProcesso;
-    const dataEntrada = req.body.dataEntrada;
-    const dataSaida = req.body.dataSaida;
-    const sistema = req.body.sistema;
-    const orgao = req.body.orgao;
-    const tipo = req.body.tipo;
-    const obs = req.body.obs;
-    const responsavel = req.body.responsavel;
 
-    const sqlInsertRegistro = "INSERT INTO processos (numProcesso, dataEntrada, dataSaida, sistema, orgao, tipo, obs, responsavel) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-    db.query(sqlInsertRegistro, [numProcesso, dataEntrada, dataSaida, sistema, orgao, tipo, obs, responsavel], (err, result) => {
-        res.send(err);
-    });
-});
 
 app.listen(3001, () => {
     console.log("Server running on port 3001");

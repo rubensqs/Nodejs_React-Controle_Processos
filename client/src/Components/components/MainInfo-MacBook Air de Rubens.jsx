@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate} from "react-router-dom";
 import Mesa from "./content/Mesa";
 import Relatorios from "./content/Relatorios";
 import jwt_decode from "jwt-decode";
@@ -8,8 +7,9 @@ function MainInfo(props) {
   const [isL, setL] = useState(true);
   const token = localStorage.getItem("AuthToken"); 
   const tokenDecoded = jwt_decode(token);
-  const navigate = useNavigate();
-  
+  console.log(tokenDecoded);
+
+
 
   function setExpand() {
     props.onExpand();
@@ -20,13 +20,8 @@ function MainInfo(props) {
     }
   }
 
-  function logOff() {
-    localStorage.clear();
-    navigate("/");
-  }
-
   const classe = (isL ? "home-section" : "home-section active");
-  
+  console.log(classe);
 
   return (
     <section className={classe}>
@@ -42,7 +37,6 @@ function MainInfo(props) {
           />
           <span className="name">{tokenDecoded.nome}</span>
         </div>
-        <div className="" onClick={logOff}>Log Off</div>
       </nav>
       <div className="main-content">
         {props.conteudo === "Mesa" ? <Mesa /> : null}
