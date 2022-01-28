@@ -57,9 +57,9 @@ app.post("/Registrar", (req, res) => {
         const userPassword = hash;
         const userNome = req.body.nome;
 
-        const sqlInsertRegistro = "INSERT INTO login (email, password, nome) VALUES (?, ?, ?)";
+        const sqlInsertRegistro = "INSERT INTO login (email, nome, password) VALUES (?, ?, ?)";
 
-        db.query(sqlInsertRegistro, [userEmail, userPassword, userNome], (err, result) => {
+        db.query(sqlInsertRegistro, [userEmail, userNome, userPassword], (err, result) => {
             res.send(err);
         });
 
